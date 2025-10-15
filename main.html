@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Административная панель</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a2a, #1a0033, #33001a, #0a0a2a);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            color: #f0f0f0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Стили формы ввода пароля */
+        .password-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            animation: fadeIn 1s ease;
+        }
+
+        .password-card {
+            background: rgba(20, 20, 40, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(100, 100, 255, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .password-card h1 {
+            margin-bottom: 20px;
+            color: #fff;
+            font-size: 1.8rem;
+            text-shadow: 0 0 10px rgba(100, 100, 255, 0.5);
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(100, 100, 255, 0.5);
+            background: rgba(10, 10, 30, 0.7);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: #6a11cb;
+            box-shadow: 0 0 10px rgba(106, 17, 203, 0.5);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(90deg, #6a11cb, #2575fc);
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.4);
+        }
+
+        .submit-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .error-message {
+            color: #ff4d4d;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            min-height: 20px;
+        }
+
+        .attempts-info {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        /* Стили основного контента */
+        .main-content {
+            display: none;
+            animation: fadeIn 1s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(20, 20, 40, 0.7);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(100, 100, 255, 0.2);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #ff416c, #ff4b2b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(255, 65, 108, 0.3);
+        }
+
+        header p {
+            color: #aaa;
+            font-size: 1.1rem;
+        }
+
+        .leader-section {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
+        }
+
+        .leader-section h2 {
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .leader-info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .leader-badge {
+            background: linear-gradient(90deg, #ffd700, #ffed4e);
+            color: #333;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: rgba(20, 20, 40, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(100, 100, 255, 0.2);
+        }
+
+        .section h2 {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(100, 100, 255, 0.3);
+            font-size: 1.8rem;
+        }
+
+        .red-admin h2 {
+            color: #ff4d4d;
+        }
+
+        .leading-admin h2 {
+            color: #6a11cb;
+        }
+
+        .main-trackers h2 {
+            color: #4cd964;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background: rgba(30, 30, 60, 0.8);
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            transition: background 0.3s ease;
+        }
+
+        th:hover {
+            background: rgba(40, 40, 80, 0.8);
+        }
+
+        th::after {
+            content: '↕';
+            position: absolute;
+            right: 10px;
+            opacity: 0.5;
+        }
+
+        th.asc::after {
+            content: '↑';
+            opacity: 1;
+        }
+
+        th.desc::after {
+            content: '↓';
+            opacity: 1;
+        }
+
+        tr {
+            transition: background 0.3s ease;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .red-badge {
+            background: rgba(255, 77, 77, 0.2);
+            color: #ff4d4d;
+            border: 1px solid rgba(255, 77, 77, 0.5);
+        }
+
+        .purple-badge {
+            background: rgba(106, 17, 203, 0.2);
+            color: #a855f7;
+            border: 1px solid rgba(106, 17, 203, 0.5);
+        }
+
+        .green-badge {
+            background: rgba(76, 217, 100, 0.2);
+            color: #4cd964;
+            border: 1px solid rgba(76, 217, 100, 0.5);
+        }
+
+        .days-count {
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .days-label {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .password-card {
+                padding: 30px 20px;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            th, td {
+                padding: 10px 8px;
+                font-size: 0.9rem;
+            }
+            
+            .section {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .password-card {
+                padding: 20px 15px;
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            th, td {
+                padding: 8px 5px;
+                font-size: 0.8rem;
+            }
+            
+            .role-badge {
+                font-size: 0.75rem;
+                padding: 4px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Форма ввода пароля -->
+    <div class="password-form" id="passwordForm">
+        <div class="password-card">
+            <h1>🔐 Доступ к панели</h1>
+            <input type="password" class="password-input" id="passwordInput" placeholder="Введите пароль" autocomplete="off">
+            <button class="submit-btn" id="submitBtn">Войти</button>
+            <div class="error-message" id="errorMessage"></div>
+            <div class="attempts-info" id="attemptsInfo"></div>
+        </div>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="main-content" id="mainContent">
+        <div class="container">
+            <header>
+                <h1>Административная панель</h1>
+                <p>Система управления персоналом</p>
+            </header>
+
+            <!-- Блок лидера по стажу -->
+            <div class="leader-section" id="leaderSection">
+                <h2>🏆 Лидер по стажу</h2>
+                <div class="leader-info">
+                    <span id="leaderName">-</span>
+                    <span class="leader-badge" id="leaderDays">0 дней</span>
+                </div>
+            </div>
+
+
+
+            <!-- Ведущая администрация -->
+            <div class="section leading-admin">
+                <h2>☁️ ВЕДУЩАЯ АДМИНИСТРАЦИЯ</h2>
+                <div class="table-container">
+                    <table id="leadingAdminTable">
+                        <thead>
+                            <tr>
+                                <th data-sort="role">Роль</th>
+                                <th data-sort="name">Ник</th>
+                                <th data-sort="date">Дата вступления</th>
+                                <th data-sort="days">Дней на посту</th>
+                                <th data-sort="vacation">Отгулы / Отпуска</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Данные будут добавлены через JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Главные следящие -->
+            <div class="section main-trackers">
+                <h2>🌥 ГЛАВНЫЕ СЛЕДЯЩИЕ</h2>
+                <div class="table-container">
+                    <table id="mainTrackersTable">
+                        <thead>
+                            <tr>
+                                <th data-sort="role">Роль</th>
+                                <th data-sort="name">Ник</th>
+                                <th data-sort="date">Дата вступления</th>
+                                <th data-sort="days">Дней на посту</th>
+                                <th data-sort="vacation">Отгулы / Отпуска</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Данные будут добавлены через JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Данные для таблиц
+        const redAdminData = [
+            // Здесь будут данные для красной администрации
+        ];
+
+   const leadingAdminData = [
+    { role: "Куратор Сервера", name: "Ampressor_Tepercho", date: "2025-10-11", vacation: 0 },
+    { role: "Заместитель Куратора Сервера", name: "Yushin_Mayskiy", date: "2025-10-06", vacation: 0 },
+    { role: "Главный Администратор", name: "Daniil_Dawens", date: "2025-10-11", vacation: 0 },
+    { role: "Заместитель Главного Администратора", name: "Dmitriy_Brestov", date: "2025-10-12", vacation: 0 }
+];
+
+const mainTrackersData = [
+    { role: "Следящий за Модераторами", name: "Aslan_Hayroyless", date: "2025-10-02", vacation: 0 },
+    { role: "Следящий за Гос. структурами", name: "Adam_Mafia", date: "2025-10-12", vacation: 0 },
+    { role: "Следящий за Преступными группировками", name: "Dmitriy_Edems", date: "2025-10-13", vacation: 0 },
+    { role: "Следящий за Нелегальными группировками", name: "Maga_Zverepiy", date: "2025-10-15", vacation: 0 }
+];
+
+        // Система защиты паролем
+        const CORRECT_PASSWORD = "44244424";
+        const MAX_ATTEMPTS = 3;
+        const BLOCK_TIME = 10 * 60 * 1000; // 10 минут в миллисекундах
+
+        let attempts = parseInt(localStorage.getItem('loginAttempts')) || 0;
+        let blockedUntil = parseInt(localStorage.getItem('blockedUntil')) || 0;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordForm = document.getElementById('passwordForm');
+            const mainContent = document.getElementById('mainContent');
+            const passwordInput = document.getElementById('passwordInput');
+            const submitBtn = document.getElementById('submitBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            const attemptsInfo = document.getElementById('attemptsInfo');
+
+            // Проверка, сохранен ли пароль в localStorage
+            if (localStorage.getItem('authenticated') === 'true') {
+                passwordForm.style.display = 'none';
+                mainContent.style.display = 'block';
+                initializeContent();
+                return;
+            }
+
+            // Проверка блокировки
+            if (blockedUntil > Date.now()) {
+                const remainingTime = Math.ceil((blockedUntil - Date.now()) / 1000 / 60);
+                errorMessage.textContent = `Система заблокирована. Попробуйте через ${remainingTime} минут.`;
+                submitBtn.disabled = true;
+                passwordInput.disabled = true;
+                return;
+            }
+
+            // Обновление информации о попытках
+            updateAttemptsInfo();
+
+            // Обработчик отправки формы
+            submitBtn.addEventListener('click', handlePasswordSubmit);
+            passwordInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handlePasswordSubmit();
+                }
+            });
+
+            function handlePasswordSubmit() {
+                const password = passwordInput.value.trim();
+                
+                if (password === CORRECT_PASSWORD) {
+                    // Успешный вход
+                    localStorage.setItem('authenticated', 'true');
+                    localStorage.setItem('loginAttempts', '0');
+                    
+                    passwordForm.style.display = 'none';
+                    mainContent.style.display = 'block';
+                    
+                    initializeContent();
+                } else {
+                    // Неправильный пароль
+                    attempts++;
+                    localStorage.setItem('loginAttempts', attempts.toString());
+                    
+                    if (attempts >= MAX_ATTEMPTS) {
+                        // Блокировка системы
+                        blockedUntil = Date.now() + BLOCK_TIME;
+                        localStorage.setItem('blockedUntil', blockedUntil.toString());
+                        
+                        errorMessage.textContent = 'Превышено количество попыток. Система заблокирована на 10 минут.';
+                        submitBtn.disabled = true;
+                        passwordInput.disabled = true;
+                    } else {
+                        errorMessage.textContent = `Неверный пароль. Осталось попыток: ${MAX_ATTEMPTS - attempts}`;
+                        updateAttemptsInfo();
+                    }
+                    
+                    passwordInput.value = '';
+                }
+            }
+
+            function updateAttemptsInfo() {
+                attemptsInfo.textContent = `Попыток: ${attempts}/${MAX_ATTEMPTS}`;
+            }
+        });
+
+        // Инициализация основного контента
+        function initializeContent() {
+            // Добавляем данные в таблицы
+            populateTable('leadingAdminTable', leadingAdminData, 'purple-badge');
+            populateTable('mainTrackersTable', mainTrackersData, 'green-badge');
+            
+            // Находим лидера по стажу
+            findAndDisplayLeader();
+            
+            // Добавляем обработчики сортировки
+            initTableSorting();
+        }
+
+        // Заполнение таблицы данными
+        function populateTable(tableId, data, badgeClass) {
+            const tableBody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';
+            
+            data.forEach(item => {
+                const daysOnPost = calculateDaysOnPost(item.date);
+                const row = tableBody.insertRow();
+                
+                row.insertCell(0).innerHTML = `<span class="role-badge ${badgeClass}">${item.role}</span>`;
+                row.insertCell(1).textContent = item.name;
+                row.insertCell(2).textContent = formatDate(item.date);
+                row.insertCell(3).innerHTML = `<span class="days-count">${daysOnPost}</span> <span class="days-label">дней</span>`;
+                row.insertCell(4).textContent = item.vacation;
+                
+                // Сохраняем данные для сортировки
+                row.dataset.role = item.role;
+                row.dataset.name = item.name;
+                row.dataset.date = item.date;
+                row.dataset.days = daysOnPost;
+                row.dataset.vacation = item.vacation;
+            });
+        }
+
+        // Расчет количества дней на посту
+        function calculateDaysOnPost(startDate) {
+            const start = new Date(startDate);
+            const today = new Date();
+            const diffTime = Math.abs(today - start);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays;
+        }
+
+        // Форматирование даты
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ru-RU');
+        }
+
+        // Поиск и отображение лидера по стажу
+        function findAndDisplayLeader() {
+            const allData = [...leadingAdminData, ...mainTrackersData];
+            let leader = null;
+            let maxDays = 0;
+            
+            allData.forEach(person => {
+                const days = calculateDaysOnPost(person.date);
+                if (days > maxDays) {
+                    maxDays = days;
+                    leader = person;
+                }
+            });
+            
+            if (leader) {
+                document.getElementById('leaderName').textContent = `${leader.name} - ${leader.role}`;
+                document.getElementById('leaderDays').textContent = `${maxDays} дней`;
+            }
+        }
+
+        // Инициализация сортировки таблиц
+        function initTableSorting() {
+            document.querySelectorAll('th[data-sort]').forEach(header => {
+                header.addEventListener('click', function() {
+                    const table = this.closest('table');
+                    const tbody = table.querySelector('tbody');
+                    const rows = Array.from(tbody.querySelectorAll('tr'));
+                    const sortKey = this.dataset.sort;
+                    const isAsc = !this.classList.contains('asc');
+                    
+                    // Сбрасываем сортировку для других заголовков
+                    table.querySelectorAll('th').forEach(th => {
+                        th.classList.remove('asc', 'desc');
+                    });
+                    
+                    // Устанавливаем направление сортировки
+                    this.classList.add(isAsc ? 'asc' : 'desc');
+                    
+                    // Сортируем строки
+                    rows.sort((a, b) => {
+                        let aValue = a.dataset[sortKey];
+                        let bValue = b.dataset[sortKey];
+                        
+                        // Для числовых значений
+                        if (sortKey === 'days' || sortKey === 'vacation') {
+                            aValue = parseInt(aValue);
+                            bValue = parseInt(bValue);
+                        }
+                        
+                        // Для дат
+                        if (sortKey === 'date') {
+                            aValue = new Date(aValue);
+                            bValue = new Date(bValue);
+                        }
+                        
+                        if (aValue < bValue) return isAsc ? -1 : 1;
+                        if (aValue > bValue) return isAsc ? 1 : -1;
+                        return 0;
+                    });
+                    // Перезаписываем таблицу
+                    rows.forEach(row => tbody.appendChild(row));
+                });
+            });
+        }
+    </script>
+</body>
+</html>
